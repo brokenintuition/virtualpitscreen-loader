@@ -1,0 +1,52 @@
+Session info I need:
+TrackName
+TrackDisplayName
+EventType (don't care about anything but Race probably)
+SessionID (this is probably race/split)
+SubSessionID (this is probably practice/qual/race)
+
+
+At session start pull data for each car:
+
+- filter out pace car and cars outside my class
+
+UserName
+UserID
+TeamID
+TeamName
+CarNumberRaw
+CarClassID
+CarID (this is probably the car itself, not the instance of a car)
+CarIdx (this is for telemetry)
+
+
+During the race I want to track 
+
+For each competitor car:
+
+- laps completed
+- lap times
+- num pit stops/stints
+- laps into stint
+- what driver is in the car
+
+CarIdxPosition
+CarIdxClassPosition
+CarIdxOnPitRoad
+CarIdxLap
+CarIdxLapCommpleted
+CarIdxPitStopCount
+CarDetails->Driver
+HasRetired (I assume this is also caridx)
+use HasData(carIdx)
+
+
+
+For my car:
+- FuelLevel
+- FuelLevelPct
+- Lap
+- LapCompleted
+- PlayerCarClassPosition
+- PlayerCarPosition
+
