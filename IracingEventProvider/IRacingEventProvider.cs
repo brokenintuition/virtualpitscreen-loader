@@ -9,7 +9,7 @@ using iRacingSDK;
 
 namespace IracingEventProvider
 {
-    class IRacingEventProvider : IEventProvider
+    public sealed class IRacingEventProvider : IEventProvider
     {
         public event Action<SessionInfo> NewSessionInfo;
         private readonly iRacingConnection _iracingConnection;
@@ -24,10 +24,14 @@ namespace IracingEventProvider
             _iracingConnection.Connected += _iracingConnection_Connected;
             _iracingConnection.Disconnected += _iracingConnection_Disconnected;
 
-            _subscription = Observable.FromEvent<DataSample>(x => _iracingConnection.NewSessionData += x, 
-                x => _iracingConnection.NewSessionData -= x)
-                .Where(d => d.IsConnected).Subscribe(HandleSample);
+            _subscription = Observable.FromEvent<DataSample>(x => iRacing.NewData += x, 
+                x => iRacing.NewData -= x)
+                .Where(x => x.IsConnected)
+                .Subscribe(HandleSample);
+
+            iRacing.StartListening();
         }
+
 
         private void _iracingConnection_Disconnected()
         {
