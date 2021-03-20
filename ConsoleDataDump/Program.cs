@@ -13,7 +13,7 @@ namespace ConsoleDataDump
         {
             var eventProvider = new IRacingEventProvider();
             eventProvider.NewSessionInfo += NewSessionInfo;
-            eventProvider.Subscribe(HandleCompetitorState);
+            eventProvider.Subscribe(HandleTelemetryUpdate);
             Console.ReadLine();
         }
 
@@ -23,7 +23,7 @@ namespace ConsoleDataDump
 
         }
 
-        private static void HandleCompetitorState(CompetitorState state)
+        private static void HandleTelemetryUpdate(TelemetryUpdate update)
         {
 
         }

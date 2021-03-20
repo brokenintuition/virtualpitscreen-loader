@@ -12,18 +12,12 @@ namespace IracingEventProvider
     public sealed class IRacingEventProvider : IEventProvider
     {
         public event Action<SessionInfo> NewSessionInfo;
-        private readonly iRacingConnection _iracingConnection;
-        private readonly Subject<CompetitorState> _competitorSubject = new Subject<CompetitorState>();
-        private readonly Subject<MyCarState> _myCarSubject = new Subject<MyCarState>();
+        private readonly Subject<TelemetryUpdate> _subject = new Subject<TelemetryUpdate>();
         private IDisposable _subscription;
         private bool _hasSentSessionData;
 
         public IRacingEventProvider()
         {
-            _iracingConnection = new iRacingConnection();
-            _iracingConnection.Connected += _iracingConnection_Connected;
-            _iracingConnection.Disconnected += _iracingConnection_Disconnected;
-
             _subscription = Observable.FromEvent<DataSample>(x => iRacing.NewData += x, 
                 x => iRacing.NewData -= x)
                 .Where(x => x.IsConnected)
@@ -33,24 +27,9 @@ namespace IracingEventProvider
         }
 
 
-        private void _iracingConnection_Disconnected()
+        public IDisposable Subscribe(IObserver<TelemetryUpdate> observer)
         {
-            //todo: log
-        }
-
-        private void _iracingConnection_Connected()
-        {
-            //todo: log
-        }
-
-        public IDisposable Subscribe(IObserver<CompetitorState> observer)
-        {
-            return _competitorSubject.Subscribe(observer);
-        }
-        
-        public IDisposable Subscribe(IObserver<MyCarState> observer)
-        {
-            return _myCarSubject.Subscribe(observer);
+            return _subject.Subscribe(observer);
         }
 
         private void HandleSample(DataSample sample)
@@ -61,19 +40,17 @@ namespace IracingEventProvider
                 NewSessionInfo?.Invoke(SessionInfo.FromSessionData(sample.SessionData));
             }
 
-            _myCarSubject.OnNext(MyCarState.FromDataSample(sample));
-
-            var competitorStates = CompetitorState.FromSample(sample);
-            foreach (var competitorState in competitorStates)
-                _competitorSubject.OnNext(competitorState);
-
+            _subject.OnNext(new TelemetryUpdate
+            {
+                MyCar = MyCarState.FromDataSample(sample),
+                CompetitorStates = CarState.FromSample(sample)
+            });
         }
 
         public void Dispose()
         {
-            _iracingConnection.Connected -= _iracingConnection_Connected;
-            _iracingConnection.Disconnected -= _iracingConnection_Disconnected;
             _subscription.Dispose();
+            iRacing.StopListening();
         }
 
     }

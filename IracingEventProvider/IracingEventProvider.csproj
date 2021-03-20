@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CarInfo.cs" />
-    <Compile Include="CompetitorState.cs" />
+    <Compile Include="CarState.cs" />
     <Compile Include="IEventProvider.cs" />
     <Compile Include="MyCarState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
